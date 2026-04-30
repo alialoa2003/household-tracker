@@ -455,10 +455,21 @@ function load() {
 function save() {
   try {
     localStorage.setItem('makhzan-v2', JSON.stringify({items, nextId}));
-    const now = new Date().toLocaleString('ar-EG', {dateStyle:'short', timeStyle:'short'});
+
+    const now = new Date().toLocaleString('ar-EG', {
+      dateStyle:'short',
+      timeStyle:'short'
+    });
+
     localStorage.setItem('makhzan-update', now);
-    document.getElementById('lastUpdate').textContent = 'آخر تحديث: ' + now;
+    document.getElementById('lastUpdate').textContent =
+      'آخر تحديث: ' + now;
+
   } catch {}
+
+  if (window.firebaseSave) {
+    window.firebaseSave();
+  }
 }
 
 function loadUpdate() {
@@ -622,6 +633,52 @@ if ('serviceWorker' in navigator) {
 load();
 loadUpdate();
 render();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAiS9inUwAbyXUw3HznDH6ZgSs_sKwEBZ0",
+  authDomain: "household-tracker-a56b1.firebaseapp.com",
+  projectId: "household-tracker-a56b1",
+  storageBucket: "household-tracker-a56b1.firebasestorage.app",
+  messagingSenderId: "345561580214",
+  appId: "1:345561580214:web:80b371c903a8dadd981c17",
+  measurementId: "G-9G6NC7K44S"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const docRef = doc(db, "house", "inventory");
+
+// live sync
+onSnapshot(docRef, (snap) => {
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data.items) {
+      items = data.items;
+      nextId = data.nextId || 100;
+      render();
+    }
+  }
+});
+
+// global save function
+window.firebaseSave = async function () {
+  await setDoc(docRef, {
+    items: items,
+    nextId: nextId
+  });
+};
+
+console.log("Firebase ready");
 </script>
 </body>
 </html>
