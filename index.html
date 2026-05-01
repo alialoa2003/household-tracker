@@ -621,12 +621,18 @@ function promptDelete(){
     `هتحذف "${item.name}" من المخزن؟`;
 
   document.getElementById('confirmOk').onclick = () => {
-    logHist('del', item.name, {});
-    items = items.filter(i => i.id !== deleteId);
-    save();
-    renderAll();
-    closeConfirm();
-    showToast(`🗑️ تم حذف "${item.name}"`);
+  const deletedName = item.name;
+
+  logHist('del', deletedName, {});
+  items = items.filter(i => i.id !== editId);
+
+  closeConfirm();   // اقفل البوب اب الأول
+  editId = null;   // امسح التحديد يدويًا
+
+  save();
+  renderAll();
+
+  showToast(`🗑️ تم حذف "${deletedName}"`);
   };
 
   closeSt();
