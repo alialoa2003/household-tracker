@@ -615,31 +615,31 @@ function promptDelete(){
   const item = items.find(i => i.id === editId);
   if(!item) return;
 
-  const deleteId = editId; // نحفظ الـ id قبل ما يتقفل
+  const deleteId = editId; // نحفظ الـ id الحقيقي
+  const deleteName = item.name;
 
   document.getElementById('confirmTxt').textContent =
-    `هتحذف "${item.name}" من المخزن؟`;
+    `هتحذف "${deleteName}" من المخزن؟`;
 
   document.getElementById('confirmOk').onclick = () => {
-  const currentId = editId;       // خزّن الـ id قبل أي حاجة
-  const deletedName = item.name;
+    items = items.filter(i => i.id !== deleteId);
 
-  items = items.filter(i => i.id !== currentId);
-  logHist('del', deletedName, {});
+    logHist('del', deleteName, {});
+    save();
+    renderAll();
 
-  closeConfirm();
-  editId = null;
-
-  save();
-  renderAll();
-
-  showToast(`🗑️ تم حذف "${deletedName}"`);
+    closeConfirm();
+    showToast(`🗑️ تم حذف "${deleteName}"`);
   };
 
   closeSt();
   document.getElementById('confirmOv').classList.add('open');
 }
-function closeConfirm(){document.getElementById('confirmOv').classList.remove('open');}
+
+function closeConfirm(){
+  document.getElementById('confirmOv').classList.remove('open');
+  document.getElementById('confirmOk').onclick = null;
+}
 
 /* ── WHATSAPP / COPY ───────────────── */
 function buildBuyText(){
