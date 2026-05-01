@@ -612,15 +612,25 @@ function pickSt(v,el){
 
 /* ── DELETE ────────────────────────── */
 function promptDelete(){
-  const item=items.find(i=>i.id===editId);if(!item)return;
-  document.getElementById('confirmTxt').textContent=`هتحذف "${item.name}" من المخزن؟`;
-  document.getElementById('confirmOk').onclick=()=>{
-    logHist('del',item.name,{});
-    items=items.filter(i=>i.id!==editId);
-    save();renderAll();closeConfirm();closeSt();
+  const item = items.find(i => i.id === editId);
+  if(!item) return;
+
+  const deleteId = editId; // نحفظ الـ id قبل ما يتقفل
+
+  document.getElementById('confirmTxt').textContent =
+    `هتحذف "${item.name}" من المخزن؟`;
+
+  document.getElementById('confirmOk').onclick = () => {
+    logHist('del', item.name, {});
+    items = items.filter(i => i.id !== deleteId);
+    save();
+    renderAll();
+    closeConfirm();
     showToast(`🗑️ تم حذف "${item.name}"`);
   };
-  closeSt();document.getElementById('confirmOv').classList.add('open');
+
+  closeSt();
+  document.getElementById('confirmOv').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirmOv').classList.remove('open');}
 
