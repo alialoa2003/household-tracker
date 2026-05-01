@@ -626,9 +626,10 @@ function promptDelete(){
 
     logHist('del', deleteName, {});
     save();
-    renderAll();
 
     closeConfirm();
+    setTimeout(renderAll, 50);
+
     showToast(`🗑️ تم حذف "${deleteName}"`);
   };
 
